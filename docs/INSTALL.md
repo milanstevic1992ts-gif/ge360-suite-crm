@@ -35,8 +35,8 @@ Le credenziali vengono salvate con permessi restrittivi in:
 ## Verifica
 
 ```bash
-ge360-suitecrm-status
-ge360-suitecrm-doctor
+sudo ge360-suitecrm-status
+sudo ge360-suitecrm-doctor
 ```
 
 ## Backup
