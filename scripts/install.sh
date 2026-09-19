@@ -20,6 +20,21 @@ for cmd in docker openssl curl; do
 done
 
 docker compose version >/dev/null 2>&1 || fail "Docker Compose v2 non disponibile"
+docker info >/dev/null 2>&1 || fail "Docker daemon non raggiungibile"
+
+detect_site_host() {
+  local detected=""
+  if command -v tailscale >/dev/null 2>&1; then
+    detected="$(tailscale ip -4 2>/dev/null | head -n 1 || true)"
+  fi
+  if [[ -z "$detected" ]]; then
+    detected="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
+  fi
+  if [[ -z "$detected" ]]; then
+    detected="127.0.0.1"
+  fi
+  printf "%s" "$detected"
+}
 
 mkdir -p "$CONFIG_DIR"
 chmod 0755 "$CONFIG_DIR"
@@ -29,6 +44,8 @@ if [[ ! -f "$ENV_FILE" ]]; then
   DB_PASSWORD="$(openssl rand -hex 24)"
   DB_ROOT_PASSWORD="$(openssl rand -hex 24)"
   ADMIN_PASSWORD="$(openssl rand -hex 12)"
+  DETECTED_HOST="$(detect_site_host)"
+  SITE_URL_DEFAULT="http://$DETECTED_HOST:8791"
 
   umask 077
   cat > "$ENV_FILE" <<EOF
@@ -36,7 +53,7 @@ SUITECRM_VERSION=$SUITECRM_VERSION
 SUITECRM_URL=$SUITECRM_URL
 SUITECRM_SHA256=$SUITECRM_SHA256
 HTTP_PORT=8791
-SITE_URL=http://localhost:8791
+SITE_URL=$SITE_URL_DEFAULT
 DB_NAME=suitecrm
 DB_USER=suitecrm
 DB_PASSWORD=$DB_PASSWORD
@@ -53,6 +70,12 @@ source "$ENV_FILE"
 set +a
 
 COMPOSE=(docker compose -p "$PROJECT" --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
+
+if command -v ss >/dev/null 2>&1 && ss -ltnH 2>/dev/null | awk '{print $4}' | grep -Eq "(^|:)$HTTP_PORT$"; then
+  if ! "${COMPOSE[@]}" ps --services --status running 2>/dev/null | grep -qx web; then
+    fail "la porta $HTTP_PORT è già occupata da un altro servizio"
+  fi
+fi
 
 info "Costruisco il runtime SuiteCRM $SUITECRM_VERSION..."
 "${COMPOSE[@]}" build web
@@ -88,7 +111,8 @@ if ! curl -fsS "http://127.0.0.1:${HTTP_PORT:-8791}/" >/dev/null 2>&1; then
 fi
 
 info "Installazione completata."
-info "URL: http://127.0.0.1:${HTTP_PORT:-8791}"
+info "URL locale: http://127.0.0.1:${HTTP_PORT:-8791}"
+info "URL configurato: $SITE_URL"
 info "Admin: $ADMIN_USERNAME"
 info "Password iniziale: $ADMIN_PASSWORD"
 info "Credenziali salvate in: $ENV_FILE"
