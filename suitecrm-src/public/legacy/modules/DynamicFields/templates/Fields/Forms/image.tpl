@@ -1,0 +1,145 @@
+{*
+
+/**
+ *
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ *
+ * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
+ * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
+ * reasonably feasible for technical reasons, the Appropriate Legal Notices must
+ * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
+ */
+
+
+
+
+*}
+
+
+{include file="modules/DynamicFields/templates/Fields/Forms/coreTop.tpl"}
+<tr>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_METADATA"}</td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_STORAGE_TYPE"}:</td>
+	<td>
+		{html_options name="storage_type" id="storage_type" options=$storage_type_options selected=$vardef.metadata.storage_type}
+	</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_IMAGE_HEIGHT"}:</td>
+	<td>
+		<input id="height" type="text" name="maxHeight"
+		{if !$vardef.metadata.maxHeight}
+			value=""
+		{else}
+			value="{$vardef.metadata.maxHeight}"
+		{/if}
+		>
+		{sugar_help text=$mod_strings.LBL_POPHELP_IMAGE_HEIGHT FIXX=250 FIXY=80}
+	</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_IMAGE_WIDTH"}:</td>
+	<td>
+		<input id="maxWidth" type="text" name="maxWidth"
+				{if !$vardef.metadata.maxWidth}
+					value=""
+				{else}
+					value="{$vardef.metadata.maxWidth}"
+				{/if}
+		>
+		{sugar_help text=$mod_strings.LBL_POPHELP_IMAGE_WIDTH FIXX=250 FIXY=80}
+	</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_UPLOAD_MAXSIZE"}:</td>
+	<td>
+		<input id="upload_maxsize" type="text" name="upload_maxsize"
+				{if !$vardef.metadata.upload_maxsize}
+					value=""
+				{else}
+					value="{$vardef.metadata.upload_maxsize}"
+				{/if}
+		>
+	</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_ALLOW_PREVIEW"}:</td>
+	<td>
+		<input type="hidden" name="preview" value="0"/>
+		<input type="checkbox" id="preview" name="preview" value="1"
+			   {if !empty($vardef.metadata.preview)}checked{/if}/>
+	</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mb-muted-header'>{sugar_translate module="DynamicFields" label="LBL_THUMBNAIL_CONFIG"}</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_CREATE_THUMBNAIL"}:</td>
+	<td>
+		<input type="hidden" name="createThumbnail" value="0"/>
+		<input type="checkbox" id="createThumbnail" name="createThumbnail" value="1"
+			   {if !empty($vardef.metadata.createThumbnail)}checked{/if}/>
+	</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_THUMBNAIL_WIDTH"}:</td>
+	<td>
+		<input id="thumbnailWidth" type="text" name="thumbnailWidth"
+				{if !$vardef.metadata.thumbnailWidth}
+					value=""
+				{else}
+					value="{$vardef.metadata.thumbnailWidth}"
+				{/if}
+		>
+	</td>
+</tr>
+<tr>
+	<td class="mbLBL"></td>
+	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_THUMBNAIL_HEIGHT"}:</td>
+	<td>
+		<input id="thumbnailHeight" type="text" name="thumbnailHeight"
+				{if !$vardef.metadata.thumbnailHeight}
+					value=""
+				{else}
+					value="{$vardef.metadata.thumbnailHeight}"
+				{/if}
+		>
+	</td>
+</tr>
+{include file="modules/DynamicFields/templates/Fields/Forms/coreBottom.tpl"}

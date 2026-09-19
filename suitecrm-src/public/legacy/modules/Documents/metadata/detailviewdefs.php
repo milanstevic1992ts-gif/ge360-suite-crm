@@ -1,0 +1,242 @@
+<?php
+/**
+ *
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ *
+ * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
+ * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
+ * reasonably feasible for technical reasons, the Appropriate Legal Notices must
+ * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
+ */
+
+$viewdefs ['Documents'] = [
+    'DetailView' => [
+        'bottomWidgets' => [
+            [
+                'type' => 'record-table',
+                'allowCollapse' => true,
+                'modes' => ['detail'],
+                'acl' => ['list'],
+                'aclModule' => 'Documents',
+                'options' => [
+                    'recordTable' => [
+                        'name' => 'therevisions',
+                        'sort_order' => 'desc',
+                        'sort_by' => 'date_entered',
+                        'labelKey' => 'LBL_DOC_REV_HEADER',
+                        'title_key' => 'LBL_DOC_REV_HEADER',
+                        'headerModule' => 'Documents',
+                        'module' => 'DocumentRevisions',
+                        'icon' => 'Documents',
+                        'top_buttons' => [
+                            [
+                                'modes' => ['list'],
+                                'acl' => ['edit'],
+                                'action' => 'create',
+                                'key' => 'create',
+                                'module' => 'document-revisions',
+                                'additionalFields' => [
+                                    'document_id' => 'id',
+                                    'document_name' => 'name',
+                                    'return_id' => 'id',
+                                ],
+                                'params' => [
+                                    'expanded' => true,
+                                    'redirect' => false
+                                ],
+                                'extraParams' => [
+                                    'parent_type' => 'Documents',
+                                    'return_relationship' => 'document_revisions',
+                                    'target_module' => 'document-revisions',
+                                    'return_module' => 'Documents',
+                                    'return_action' => 'DetailView'
+                                ],
+                                'labelKey' => 'LBL_NEW_REVISION',
+                                'widget_class' => 'SubPanelTopButtonQuickCreate',
+                            ],
+                        ],
+                        'lineActions' => [
+                            [
+                                'key' => 'document-revision-delete',
+                                'labelKey' => 'LBL_DELETE_RECORD',
+                                'titleKey' => 'LBL_DELETE_RECORD',
+                                'action' => 'document-revision-delete',
+                                'icon' => 'trash-filled',
+                                'klass' => 'delete-revision-line-action',
+                                'aclModule' => 'Documents',
+                                'asyncProcess' => true,
+                                'routing' => false,
+                                'params' => [
+                                    'displayConfirmation' => true,
+                                    'confirmationLabel' => 'LBL_DELETE_REVISION_CONFIRM',
+                                ],
+                                'modes' => ['list'],
+                                'acl' => ['edit'],
+                                'module' => 'document-revisions',
+                            ],
+                        ],
+
+
+                        'columns' => [
+                            [
+                                'name' => 'filename',
+                                'type' => 'file',
+                                'label' => 'LBL_REV_LIST_FILENAME',
+                                'vname' => 'LBL_REV_LIST_FILENAME',
+                            ],
+                            [
+                                'name' => 'revision',
+                                'label' => 'LBL_REV_LIST_REVISION',
+                            ],
+                            [
+                                'name' => 'date_entered',
+                                'label' => 'LBL_REV_LIST_ENTERED',
+                                'sortable' => true,
+                                'sortReadOnly' => true,
+                                'type' => 'datetime',
+                            ],
+                            [
+                                'name' => 'created_by_name',
+                                'label' => 'LBL_REV_LIST_CREATED',
+                                'type' => 'relate',
+                                'fieldDefinition' => [
+                                    'rname' => 'user_name',
+                                    'source' => 'non-db',
+                                ],
+                            ],
+                            [
+                                'name' => 'change_log',
+                                'label' => 'LBL_REV_LIST_LOG',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'templateMeta' => [
+            'maxColumns' => '2',
+            'form' => [
+                'buttons' => [
+                    0 => 'EDIT',
+                    1 => 'DUPLICATE',
+                    2 => 'DELETE',
+                ],
+            ],
+            'widths' => [
+                0 => [
+                    'label' => '10',
+                    'field' => '30',
+                ],
+                1 => [
+                    'label' => '10',
+                    'field' => '30',
+                ],
+            ],
+            'useTabs' => true,
+            'tabDefs' => [
+                'LBL_DOCUMENT_INFORMATION' => [
+                    'newTab' => true,
+                    'panelDefault' => 'expanded',
+                ],
+                'LBL_PANEL_ASSIGNMENT' => [
+                    'newTab' => true,
+                    'panelDefault' => 'expanded',
+                ],
+            ],
+        ],
+        'panels' => [
+            'lbl_document_information' => [
+                [
+                    [
+                        'name' => 'filename',
+                        'displayParams' => [
+                            'link' => 'filename',
+                            'id' => 'document_revision_id',
+                        ],
+                    ],
+                    [
+                        'name' => 'status_id',
+                        'label' => 'LBL_DOC_STATUS',
+                    ],
+                ],
+                [
+                    [
+                        'name' => 'document_name',
+                        'label' => 'LBL_DOC_NAME',
+                    ],
+                    [
+                        'name' => 'revision',
+                        'label' => 'LBL_DOC_VERSION',
+                    ],
+                ],
+                [
+                    [
+                        'name' => 'template_type',
+                        'label' => 'LBL_DET_TEMPLATE_TYPE',
+                    ],
+                    [
+                        'name' => 'is_template',
+                        'label' => 'LBL_DET_IS_TEMPLATE',
+                    ],
+                ],
+                [
+                    'active_date',
+                    'exp_date',
+                ],
+                [
+                    'category_id',
+                    'subcategory_id',
+                ],
+                [
+                    [
+                        'name' => 'assigned_user_name',
+                        'label' => 'LBL_ASSIGNED_TO_NAME',
+                    ],
+                    ''
+                ],
+            ],
+            'LBL_PANEL_ASSIGNMENT' => [
+                [
+                    [
+                        'name' => 'date_entered',
+                        'customCode' => '{$fields.date_entered.value} {$APP.LBL_BY} {$fields.created_by_name.value}',
+                    ],
+                    [
+                        'name' => 'date_modified',
+                        'label' => 'LBL_DATE_MODIFIED',
+                        'customCode' => '{$fields.date_modified.value} {$APP.LBL_BY} {$fields.modified_by_name.value}',
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

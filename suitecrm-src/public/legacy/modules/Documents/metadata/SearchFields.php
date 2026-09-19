@@ -1,0 +1,99 @@
+<?php
+$searchFields['Documents'] = [
+    'document_name' => [
+        'query_type' => 'default',
+    ],
+    'category_id' => [
+        'query_type' => 'default',
+        'options' => 'document_category_dom',
+        'template_var' => 'CATEGORY_OPTIONS',
+    ],
+    'subcategory_id' => [
+        'query_type' => 'default',
+        'options' => 'document_subcategory_dom',
+        'template_var' => 'SUBCATEGORY_OPTIONS',
+    ],
+    'range_active_date' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'start_range_active_date' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'end_range_active_date' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'range_exp_date' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'start_range_exp_date' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'end_range_exp_date' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'assigned_user_id' => [
+        'query_type' => 'default',
+    ],
+    'filename' => [
+        'query_type' => 'format',
+        'operator' => 'subquery',
+        'subquery' => 'SELECT document_revisions.id FROM document_revisions
+			           WHERE document_revisions.deleted=0
+				   AND document_revisions.filename LIKE \'{0}\'',
+        'db_field' =>
+            [
+                0 => 'document_revision_id',
+            ],
+    ],
+    'range_date_entered' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'start_range_date_entered' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'end_range_date_entered' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'range_date_modified' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'start_range_date_modified' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'end_range_date_modified' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'favorites_only' => [
+        'query_type' => 'format',
+        'operator' => 'subquery',
+        'checked_only' => true,
+        'subquery' => "SELECT favorites.parent_id FROM favorites
+			                    WHERE favorites.deleted = 0
+			                        and favorites.parent_type = 'Documents'
+			                        and favorites.assigned_user_id = '{1}'",
+        'db_field' => ['id']],
+];
