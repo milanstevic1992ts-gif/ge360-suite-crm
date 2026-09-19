@@ -1,0 +1,96 @@
+name: Vendor SuiteCRM source
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/vendor-suitecrm.yml"
+      - "UPSTREAM.lock"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-suitecrm
+  cancel-in-progress: false
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GE360 repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Read pinned SuiteCRM version
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          source UPSTREAM.lock
+          echo "SUITECRM_TAG=$SUITECRM_TAG" >> "$GITHUB_ENV"
+          echo "SUITECRM_VERSION=$SUITECRM_VERSION" >> "$GITHUB_ENV"
+          echo "SUITECRM_COMMIT=$SUITECRM_COMMIT" >> "$GITHUB_ENV"
+
+      - name: Clone complete SuiteCRM source snapshot
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          rm -rf /tmp/suitecrm-upstream suitecrm-src
+
+          git clone \
+            --depth 1 \
+            --branch "$SUITECRM_TAG" \
+            https://github.com/SuiteCRM/SuiteCRM-Core.git \
+            /tmp/suitecrm-upstream
+
+          actual_commit="$(git -C /tmp/suitecrm-upstream rev-parse HEAD)"
+          if [[ "$actual_commit" != "$SUITECRM_COMMIT" ]]; then
+            echo "Commit inatteso: $actual_commit"
+            echo "Commit atteso:   $SUITECRM_COMMIT"
+            exit 1
+          fi
+
+          rm -rf /tmp/suitecrm-upstream/.git
+          mkdir -p suitecrm-src
+          cp -a /tmp/suitecrm-upstream/. suitecrm-src/
+
+          test -f suitecrm-src/LICENSE.txt
+          test -f suitecrm-src/composer.json
+          test -f suitecrm-src/package.json
+          test -d suitecrm-src/core
+          test -d suitecrm-src/public
+
+          printf '%s\n' \
+            "SuiteCRM upstream source snapshot" \
+            "Version: $SUITECRM_VERSION" \
+            "Tag: $SUITECRM_TAG" \
+            "Commit: $SUITECRM_COMMIT" \
+            "Repository: https://github.com/SuiteCRM/SuiteCRM-Core" \
+            "License: AGPL-3.0 - see LICENSE.txt" \
+            > suitecrm-src/GE360_UPSTREAM_SNAPSHOT.txt
+
+          echo "File copiati:"
+          find suitecrm-src -type f | wc -l
+          du -sh suitecrm-src
+
+      - name: Commit SuiteCRM source into GE360 repository
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          git config user.name "GE360 Upstream Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add -A suitecrm-src
+
+          if git diff --cached --quiet; then
+            echo "Snapshot SuiteCRM già aggiornato."
+            exit 0
+          fi
+
+          git commit -m "vendor: SuiteCRM $SUITECRM_VERSION source snapshot"
+          git push origin HEAD:main
