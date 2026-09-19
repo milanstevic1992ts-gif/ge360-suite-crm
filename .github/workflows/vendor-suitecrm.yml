@@ -57,7 +57,7 @@ jobs:
 
           tracked_count="$(git -C /tmp/suitecrm-upstream ls-files | wc -l | tr -d ' ')"
 
-          git -C /tmp/suitecrm-upstream archive HEAD | tar -x -C suitecrm-src
+          git -C /tmp/suitecrm-upstream checkout-index -a --prefix="$GITHUB_WORKSPACE/suitecrm-src/"
 
           printf '%s\n' \
             "SuiteCRM upstream source snapshot" \
