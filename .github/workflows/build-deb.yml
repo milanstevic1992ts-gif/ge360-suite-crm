@@ -1,0 +1,48 @@
+name: Build GE360 SuiteCRM
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "VERSION"
+      - "UPSTREAM.lock"
+      - "docker-compose.yml"
+      - "docker/**"
+      - "scripts/**"
+      - "config/**"
+      - "packaging/**"
+      - ".github/workflows/build-deb.yml"
+
+jobs:
+  validate-build-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts
+        run: |
+          bash -n scripts/*.sh
+          bash -n packaging/build-deb.sh
+
+      - name: Validate Compose
+        run: docker compose --env-file config/ge360.env.example config >/dev/null
+
+      - name: Build SuiteCRM runtime image
+        run: docker compose --env-file config/ge360.env.example build web
+
+      - name: Build Debian package
+        run: |
+          chmod +x packaging/build-deb.sh
+          ./packaging/build-deb.sh
+          dpkg-deb --info dist/*.deb
+          dpkg-deb --contents dist/*.deb
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ge360-suitecrm-engine-deb
+          path: dist/*.deb
+          if-no-files-found: error
