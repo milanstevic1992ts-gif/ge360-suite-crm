@@ -1,0 +1,92 @@
+services:
+  db:
+    image: mariadb:11.4
+    container_name: ge360_suitecrm_db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-suitecrm}
+      MARIADB_USER: ${DB_USER:-suitecrm}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD required}
+      TZ: ${TZ:-Europe/Rome}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - suitecrm_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MARIADB_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SUITECRM_URL: ${SUITECRM_URL:?SUITECRM_URL required}
+        SUITECRM_SHA256: ${SUITECRM_SHA256:?SUITECRM_SHA256 required}
+    image: ge360-suitecrm-app:${SUITECRM_VERSION:-8.10.2}
+    container_name: ge360_suitecrm_web
+    restart: unless-stopped
+    environment:
+      APP_ENV: prod
+      TZ: ${TZ:-Europe/Rome}
+    ports:
+      - "${HTTP_PORT:-8791}:80"
+    volumes:
+      - suitecrm_app:/var/www/suitecrm
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    image: ge360-suitecrm-app:${SUITECRM_VERSION:-8.10.2}
+    container_name: ge360_suitecrm_worker
+    restart: unless-stopped
+    user: www-data
+    working_dir: /var/www/suitecrm
+    environment:
+      APP_ENV: prod
+      TZ: ${TZ:-Europe/Rome}
+    volumes:
+      - suitecrm_app:/var/www/suitecrm
+    command:
+      - bash
+      - -lc
+      - |
+        while true; do
+          php bin/console messenger:consume internal-async --time-limit=3600 --memory-limit=256M
+          sleep 2
+        done
+    depends_on:
+      - web
+
+  scheduler:
+    image: ge360-suitecrm-app:${SUITECRM_VERSION:-8.10.2}
+    container_name: ge360_suitecrm_scheduler
+    restart: unless-stopped
+    user: www-data
+    working_dir: /var/www/suitecrm
+    environment:
+      APP_ENV: prod
+      TZ: ${TZ:-Europe/Rome}
+    volumes:
+      - suitecrm_app:/var/www/suitecrm
+    command:
+      - bash
+      - -lc
+      - |
+        while true; do
+          php bin/console schedulers:run || true
+          sleep 60
+        done
+    depends_on:
+      - web
+
+volumes:
+  suitecrm_db:
+    name: ge360_suitecrm_db
+  suitecrm_app:
+    name: ge360_suitecrm_app
