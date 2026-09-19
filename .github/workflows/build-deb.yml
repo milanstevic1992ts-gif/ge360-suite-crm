@@ -40,6 +40,24 @@ jobs:
           dpkg-deb --info dist/*.deb
           dpkg-deb --contents dist/*.deb
 
+      - name: Install Debian package
+        run: sudo apt-get install -y ./dist/*.deb
+
+      - name: Smoke test real installation
+        run: |
+          sudo ge360-suitecrm-install
+          ge360-suitecrm-status
+          ge360-suitecrm-doctor
+          curl -fsS http://127.0.0.1:8791/ >/dev/null
+
+      - name: Cleanup smoke test
+        if: always()
+        run: |
+          if [ -f /etc/ge360/suitecrm-engine.env ]; then
+            sudo ge360-suitecrm-uninstall --purge || true
+          fi
+          sudo rm -f /etc/ge360/suitecrm-engine.env || true
+
       - name: Upload Debian package
         uses: actions/upload-artifact@v4
         with:
