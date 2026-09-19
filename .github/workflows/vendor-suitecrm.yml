@@ -69,12 +69,18 @@ jobs:
             "Tracked upstream files: $tracked_count" \
             > suitecrm-src/GE360_UPSTREAM_SNAPSHOT.txt
 
-          exported_count="$(find suitecrm-src -type f ! -name GE360_UPSTREAM_SNAPSHOT.txt | wc -l | tr -d ' ')"
+          missing=0
+          while IFS= read -r tracked_path; do
+            if [[ ! -e "suitecrm-src/$tracked_path" && ! -L "suitecrm-src/$tracked_path" ]]; then
+              echo "Manca: $tracked_path"
+              missing=$((missing + 1))
+            fi
+          done < <(git -C /tmp/suitecrm-upstream ls-files)
 
-          echo "File tracciati upstream: $tracked_count"
-          echo "File esportati:          $exported_count"
+          echo "Percorsi tracciati upstream: $tracked_count"
+          echo "Percorsi mancanti:          $missing"
 
-          if [[ "$tracked_count" != "$exported_count" ]]; then
+          if [[ "$missing" -ne 0 ]]; then
             echo "Snapshot incompleta."
             exit 1
           fi
