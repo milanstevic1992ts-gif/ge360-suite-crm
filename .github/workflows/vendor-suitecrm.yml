@@ -34,12 +34,13 @@ jobs:
           echo "SUITECRM_VERSION=$SUITECRM_VERSION" >> "$GITHUB_ENV"
           echo "SUITECRM_COMMIT=$SUITECRM_COMMIT" >> "$GITHUB_ENV"
 
-      - name: Clone complete SuiteCRM source snapshot
+      - name: Export exact SuiteCRM tracked source snapshot
         shell: bash
         run: |
           set -Eeuo pipefail
 
           rm -rf /tmp/suitecrm-upstream suitecrm-src
+          mkdir -p suitecrm-src
 
           git clone \
             --depth 1 \
@@ -54,15 +55,9 @@ jobs:
             exit 1
           fi
 
-          rm -rf /tmp/suitecrm-upstream/.git
-          mkdir -p suitecrm-src
-          cp -a /tmp/suitecrm-upstream/. suitecrm-src/
+          tracked_count="$(git -C /tmp/suitecrm-upstream ls-files | wc -l | tr -d ' ')"
 
-          test -f suitecrm-src/LICENSE.txt
-          test -f suitecrm-src/composer.json
-          test -f suitecrm-src/package.json
-          test -d suitecrm-src/core
-          test -d suitecrm-src/public
+          git -C /tmp/suitecrm-upstream archive HEAD | tar -x -C suitecrm-src
 
           printf '%s\n' \
             "SuiteCRM upstream source snapshot" \
@@ -71,13 +66,29 @@ jobs:
             "Commit: $SUITECRM_COMMIT" \
             "Repository: https://github.com/SuiteCRM/SuiteCRM-Core" \
             "License: AGPL-3.0 - see LICENSE.txt" \
+            "Tracked upstream files: $tracked_count" \
             > suitecrm-src/GE360_UPSTREAM_SNAPSHOT.txt
 
-          echo "File copiati:"
-          find suitecrm-src -type f | wc -l
+          exported_count="$(find suitecrm-src -type f ! -name GE360_UPSTREAM_SNAPSHOT.txt | wc -l | tr -d ' ')"
+
+          echo "File tracciati upstream: $tracked_count"
+          echo "File esportati:          $exported_count"
+
+          if [[ "$tracked_count" != "$exported_count" ]]; then
+            echo "Snapshot incompleta."
+            exit 1
+          fi
+
+          test -f suitecrm-src/LICENSE.txt
+          test -f suitecrm-src/.env
+          test -f suitecrm-src/composer.json
+          test -f suitecrm-src/package.json
+          test -d suitecrm-src/core
+          test -d suitecrm-src/public
+
           du -sh suitecrm-src
 
-      - name: Commit SuiteCRM source into GE360 repository
+      - name: Commit exact SuiteCRM source into GE360 repository
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -85,12 +96,12 @@ jobs:
           git config user.name "GE360 Upstream Bot"
           git config user.email "actions@users.noreply.github.com"
 
-          git add -A suitecrm-src
+          git add -f -A suitecrm-src
 
           if git diff --cached --quiet; then
-            echo "Snapshot SuiteCRM già aggiornato."
+            echo "Snapshot SuiteCRM già aggiornata."
             exit 0
           fi
 
-          git commit -m "vendor: SuiteCRM $SUITECRM_VERSION source snapshot"
+          git commit -m "vendor: sync exact SuiteCRM $SUITECRM_VERSION source snapshot"
           git push origin HEAD:main
