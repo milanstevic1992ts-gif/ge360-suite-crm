@@ -5,6 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="${GE360_SUITECRM_CONFIG_DIR:-/etc/ge360}/suitecrm-engine.env"
 
+[[ "${EUID}" -eq 0 ]] || { echo "Esegui con sudo/root: sudo ge360-suitecrm-status" >&2; exit 1; }
+
 [[ -f "$ENV_FILE" ]] || { echo "Configurazione non trovata: $ENV_FILE" >&2; exit 1; }
 
 set -a
