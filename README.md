@@ -23,7 +23,7 @@ Ruoli previsti:
 - Licenza upstream: **AGPL-3.0**
 - Pacchetto produzione: `SuiteCRM-8.10.2.zip`
 
-Il codice SuiteCRM non viene copiato o rebrandizzato in questa repository. Il wrapper scarica il pacchetto ufficiale fissato in `UPSTREAM.lock` e verifica il checksum prima di usarlo.
+La repository contiene anche una snapshot completa e verificata del sorgente ufficiale SuiteCRM 8.10.2 in `suitecrm-src/`. La snapshot corrisponde al tag `v8.10.2` / commit `6c7ce002a8f9b594eb80021d273af0aee72af54a` e mantiene integralmente licenza e avvisi upstream. Il runtime GE360 continua per ora a usare il pacchetto produzione ufficiale fissato in `UPSTREAM.lock`, così possiamo testare SuiteCRM senza alterarne il funzionamento.
 
 ## Stack GE360
 
