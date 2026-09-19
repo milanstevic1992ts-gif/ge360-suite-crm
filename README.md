@@ -57,8 +57,8 @@ sudo ge360-suitecrm-install
 Comandi:
 
 ```bash
-ge360-suitecrm-status
-ge360-suitecrm-doctor
+sudo ge360-suitecrm-status
+sudo ge360-suitecrm-doctor
 sudo ge360-suitecrm-backup
 sudo ge360-suitecrm-update
 sudo ge360-suitecrm-uninstall
