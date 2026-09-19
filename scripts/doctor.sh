@@ -6,6 +6,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="${GE360_SUITECRM_CONFIG_DIR:-/etc/ge360}/suitecrm-engine.env"
 errors=0
 
+[[ "${EUID}" -eq 0 ]] || { echo "Esegui con sudo/root: sudo ge360-suitecrm-doctor" >&2; exit 1; }
+
 ok() { echo "OK      $*"; }
 warn() { echo "WARNING $*"; }
 bad() { echo "ERROR   $*"; errors=$((errors+1)); }
