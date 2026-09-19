@@ -47,8 +47,8 @@ jobs:
       - name: Smoke test real installation
         run: |
           sudo ge360-suitecrm-install
-          ge360-suitecrm-status
-          ge360-suitecrm-doctor
+          sudo ge360-suitecrm-status
+          sudo ge360-suitecrm-doctor
           curl -fsS http://127.0.0.1:8791/ >/dev/null
 
       - name: Cleanup smoke test
