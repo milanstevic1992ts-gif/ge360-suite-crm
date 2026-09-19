@@ -1,0 +1,5 @@
+*
+!docker/
+!docker/Dockerfile
+!docker/apache-vhost.conf
+!docker/php-ge360.ini
