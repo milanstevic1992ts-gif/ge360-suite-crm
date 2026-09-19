@@ -14,7 +14,7 @@
 - [x] backup
 - [x] restore
 - [x] packaging Debian
-- [ ] CI completa verde
+- [x] CI completa verde
 - [ ] prova reale su Debian
 
 ## Fase 2 — Uso reale
