@@ -90,7 +90,7 @@ Solo se diventa indispensabile valuteremo personalizzazioni più profonde.
 - [x] backup / restore
 - [x] packaging Debian
 - [ ] test installazione reale Debian
-- [ ] GitHub Actions verde
+- [x] GitHub Actions verde
 
 ### Fase 2 — Uso reale
 - [ ] aziende
