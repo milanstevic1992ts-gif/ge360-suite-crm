@@ -1,0 +1,6 @@
+SuiteCRM upstream source snapshot
+Version: 8.10.2
+Tag: v8.10.2
+Commit: 6c7ce002a8f9b594eb80021d273af0aee72af54a
+Repository: https://github.com/SuiteCRM/SuiteCRM-Core
+License: AGPL-3.0 - see LICENSE.txt

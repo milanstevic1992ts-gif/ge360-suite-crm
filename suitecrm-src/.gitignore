@@ -1,0 +1,73 @@
+## SuiteCRM 8 ##
+
+/.angular/cache
+/angular.json
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> ng serve ###
+/proxy.conf.local.json
+###< ng serve ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+# Symfony Logs
+/logs/
+!logs/.gitkeep
+
+# Symfony Cache
+/cache/
+
+# Nx Cache
+/.nx/
+
+# Dependencies
+node_modules
+
+# Compiled Output
+/public/
+/dist/
+
+# Tmp
+/tmp/
+!/tmp/.gitkeep
+
+# Custom
+/extensions/
+!extensions/.gitkeep
+!extensions/defaultExt/app
+!extensions/defaultExt/backend
+!extensions/defaultExt/config
+
+# Tests
+tests/_output/
+tests/_support/_generated/
+!tests/_output/.gitkeep
+!tests/_support/_generated/.gitkeep
+
+# Composer
+composer.phar
+
+# htacess
+/.htaccess
+
+# SASS
+/public/legacy/themes/suite8/css/Dawn/style.css
+/public/legacy/themes/suite8/css/Noon/style.css

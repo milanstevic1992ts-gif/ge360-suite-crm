@@ -1,0 +1,49 @@
+parameters:
+  module.subpanel.line_actions:
+    default:
+      actions:
+        edit:
+          key: edit
+          labelKey: LBL_EDIT_RECORD
+          action: edit
+          icon: edit
+          asyncProcess: true
+          routing: true
+          params:
+          modes:
+            - list
+          acl:
+            - edit
+        unlink:
+          key: unlink
+          labelKey: LBL_UNLINK_RECORD
+          action: unlink
+          icon: unlink
+          asyncProcess: true
+          routing: false
+          params:
+            displayConfirmation: true
+            confirmationLabel: LBL_UNLINK_RELATIONSHIP_CONFIRM
+          modes:
+            - list
+          acl:
+            - edit
+    modules:
+      document-revisions:
+        actions:
+          delete:
+            key: document-revision-delete
+            labelKey: LBL_DELETE_RECORD
+            titleKey: LBL_DELETE_RECORD
+            action: document-revision-delete
+            icon: trash-filled
+            aclModule: 'Documents'
+            asyncProcess: true
+            routing: false
+            params:
+              displayConfirmation: true
+              confirmationLabel: LBL_DELETE_REVISION_CONFIRM
+            modes:
+              - list
+            acl:
+              - edit
